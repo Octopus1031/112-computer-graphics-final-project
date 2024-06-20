@@ -3602,10 +3602,10 @@ void DrawInhabitants(GLint nShadow)
             glPushMatrix();
                 glBindTexture(GL_TEXTURE_2D, textureObjects[SPHERE_TEXTURE]);
                 glTranslated(0.0f, -0.17f, 0.0f);
-                drawTorso(0.05f, 0.02f, 0.05f, nShadow);
+                drawTorso(0.04f, 0.02f, 0.04f, nShadow);
             // 盆
-                glBindTexture(GL_TEXTURE_2D, textureObjects[TORUS_TEXTURE]);
-                glTranslated(0.0f, -0.01f, 0.0f);
+                // glBindTexture(GL_TEXTURE_2D, textureObjects[TORUS_TEXTURE]);
+                glTranslated(0.0f, -0.005f, 0.0f);
                 drawTorso(0.055f, 0.01f, 0.055f, nShadow);
             glPopMatrix();
         glPopMatrix();
