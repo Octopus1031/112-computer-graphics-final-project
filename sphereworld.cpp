@@ -612,7 +612,7 @@ bool timerStatus = true;
 void TimerFunction(int);
 
 // load obj file
-ObjLoader grassObj = ObjLoader("D:\\code\\graph\\Lab13\\final_sampleCode\\testOBJ.obj");
+ObjLoader* grassObj = new ObjLoader("D:\\code\\graph\\Lab13\\final_sampleCode\\testOBJ.obj");
 
 ///////////////////////////////////////////////////////////////////////////////
 // Win32 Only
@@ -3561,7 +3561,7 @@ void DrawInhabitants(GLint nShadow)
 
     if (nShadow == 0)
     {
-        yRot += 0.5f;
+        yRot += 0.1f;
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
     else
@@ -3592,11 +3592,11 @@ void DrawInhabitants(GLint nShadow)
             // drawRobot(0);
             glPushMatrix();
                 glDisable(GL_CULL_FACE);
-                grassObj.init();
+                grassObj->init();
                 glScalef(5.0f, 5.0f, 5.0f);
-                grassObj.rotate();
-                grassObj.translate();
-                grassObj.draw(nShadow);
+                grassObj->rotate();
+                grassObj->translate();
+                grassObj->draw(nShadow);
                 // glMaterialfv(GL_FRONT, GL_SPECULAR, fNoLight);
                 glEnable(GL_CULL_FACE);
             glPopMatrix();

@@ -21,6 +21,7 @@ public:
     };
     int vi=0, vti=0, vni=0;
     GLuint textures[1];
+    cv::Mat grassImg;
     ObjLoader(string filename) {
         ifstream file(filename);
         if (!file.is_open()) {
@@ -120,6 +121,23 @@ public:
         }
         file.close();
         srand(time(NULL));
+
+        grassImg = cv::imread("C:\\Users\\selab\\Downloads\\ImageToStl.com_nettle_plant_1k\\nettle_plant_dry_diff_1k_2.png"); // ï¿½Qï¿½ï¿½openCVÅªï¿½ï¿½ï¿½Ï¤ï¿½ï¿½É®ï¿½
+        if (grassImg.empty()) {
+            std::cout << "grassImg empty\n";
+        }
+        else {
+            cv::flip(grassImg, grassImg, 0);
+            glGenTextures(1, &textures[0]);
+            glBindTexture(GL_TEXTURE_2D, textures[0]);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, grassImg.cols, grassImg.rows, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, grassImg.ptr());
+        }
     }
 
     void translatedInit() {
@@ -194,17 +212,10 @@ public:
         }
     }
     void init() {
-        // gluLookAt(cameraAt[0], cameraAt[1], cameraAt[2], cameraLookAt[0], cameraLookAt[1], cameraLookAt[2], 0, 1, 0);
-        // scaleInit();
-        // translatedInit();   
-        cv::Mat grassImg = cv::imread("C:\\Users\\selab\\Downloads\\ImageToStl.com_nettle_plant_1k\\nettle_plant_dry_diff_1k_2.png"); // §Q¥ÎopenCVÅª¨ú¹Ï¤ùÀÉ®×
         if (grassImg.empty()) {
             std::cout << "grassImg empty\n";
         }
         else {
-            // ±NÅª¨ú¶i¨Óªº¹Ï¤ùÀÉ®×·í§@§÷½è¦s¶itextures¤¤
-            cv::flip(grassImg, grassImg, 0);
-            glGenTextures(1, &textures[0]);
             glBindTexture(GL_TEXTURE_2D, textures[0]);
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -266,12 +277,12 @@ public:
     }
 
 private:
-    vector<vector<GLfloat>> v;  //©ñ³»ÂI(x,y,z)
-    vector<vector<GLint>> f;    //¦s¤T³»ÂIindex
-    vector<vector<GLfloat>> vt; //©ñtextureÂI(a,b)
-    vector<vector<GLint>> fvt;  //¦s¤T³»ÂItrexture index
-    vector<vector<GLfloat>> vn; //©ñnormal³»ÂI(x,y,z)
-    vector<vector<GLint>> fvn;  //¦s¤T³»ÂInormal index
+    vector<vector<GLfloat>> v;  //ï¿½ï¿½ï¿½I(x,y,z)
+    vector<vector<GLint>> f;    //ï¿½sï¿½Tï¿½ï¿½ï¿½Iindex
+    vector<vector<GLfloat>> vt; //ï¿½ï¿½textureï¿½I(a,b)
+    vector<vector<GLint>> fvt;  //ï¿½sï¿½Tï¿½ï¿½ï¿½Itrexture index
+    vector<vector<GLfloat>> vn; //ï¿½ï¿½normalï¿½ï¿½ï¿½I(x,y,z)
+    vector<vector<GLint>> fvn;  //ï¿½sï¿½Tï¿½ï¿½ï¿½Inormal index
     float maxX=0, maxY=0, maxZ=0;
     float minX=0, minY=0, minZ=0;
     int renderMode = 2;     //0: point, 1: line, 2: face
@@ -357,14 +368,14 @@ private:
             glColor3f(RandomColor[0], RandomColor[1], RandomColor[2]);
         }
         for (int i = 0; i < f.size(); i++) {
-            //¤T³»ÂI
+            //ï¿½Tï¿½ï¿½ï¿½I
             vertex a, b, c, normal;
 
             if ((f[i]).size() != 3) {
                 cout << "ERRER::THE SIZE OF f IS NOT 3!" << endl;
             }
             else {
-                GLint firstVertexIndex = (f[i])[0];//³»ÂIindex
+                GLint firstVertexIndex = (f[i])[0];//ï¿½ï¿½ï¿½Iindex
                 GLint secondVertexIndex = (f[i])[1];
                 GLint thirdVertexIndex = (f[i])[2];
 
@@ -380,7 +391,7 @@ private:
                 c.y = (v[thirdVertexIndex])[1];
                 c.z = (v[thirdVertexIndex])[2];
 
-                //µe¤TÃä
+                //ï¿½eï¿½Tï¿½ï¿½
                 glVertex3f(a.x, a.y, a.z); 
                 glVertex3f(b.x, b.y, b.z);
 
