@@ -3161,7 +3161,7 @@ GLFrame frameCamera;
 // Light and material Data
 GLfloat fLightPos[4] = {-100.0f, 100.0f, 50.0f, 1.0f}; // Point source
 GLfloat fNoLight[] = {0.0f, 0.0f, 0.0f, 0.0f};
-GLfloat fLowLight[] = {0.95f, 0.95f, 0.95f, 1.0f};
+GLfloat fLowLight[] = {0.95f, 0.95f, 0.95f, 0.5f};
 GLfloat fBrightLight[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
 M3DMatrix44f mShadowMatrix;
@@ -3169,10 +3169,11 @@ M3DMatrix44f mShadowMatrix;
 #define GROUND_TEXTURE 0    // 白土
 #define TORUS_TEXTURE 1     // 白泥
 #define SPHERE_TEXTURE 2    // 黑土
-#define NUM_TEXTURES 3
+#define ROBOT_TEXTURE 3     // 金屬
+#define NUM_TEXTURES 4
 GLuint textureObjects[NUM_TEXTURES];
 
-const char *szTextureFiles[] = {"D:\\code\\graph\\final\\snow_02_rough_1k.tga", "D:\\code\\graph\\final\\polystyrene_disp_1k.tga", "D:\\code\\graph\\final\\brown_mud_02_diff_1k.tga"};
+const char *szTextureFiles[] = {"D:\\code\\graph\\final\\snow_02_rough_1k.tga", "D:\\code\\graph\\final\\polystyrene_disp_1k.tga", "D:\\code\\graph\\final\\brown_mud_02_diff_1k.tga", "D:\\code\\graph\\final\\metallic-textured-background.tga"};
 
 GLfloat angleLeftArm1 = 0;
 GLfloat angleLeftArm2 = 10;
@@ -3196,7 +3197,8 @@ void SetupRC()
     int i;
 
     // Grayish background
-    glClearColor(fLowLight[0], fLowLight[1], fLowLight[2], fLowLight[3]);
+    // glClearColor(fLowLight[0], fLowLight[1], fLowLight[2], fLowLight[3]);
+    glClearColor(0.95f, 0.95f, 0.95f, 1.0f);
 
     // Clear stencil buffer with zero, increment by one whenever anybody
     // draws into it. When stencil function is enabled, only write where
@@ -3604,7 +3606,7 @@ void DrawInhabitants(GLint nShadow)
                 glTranslated(0.0f, -0.17f, 0.0f);
                 drawTorso(0.04f, 0.02f, 0.04f, nShadow);
             // 盆
-                // glBindTexture(GL_TEXTURE_2D, textureObjects[TORUS_TEXTURE]);
+                // glBindTexture(GL_TEXTURE_2D, textureObjects[ROBOT_TEXTURE]);
                 glTranslated(0.0f, -0.005f, 0.0f);
                 drawTorso(0.055f, 0.01f, 0.055f, nShadow);
             glPopMatrix();
@@ -3618,11 +3620,30 @@ void DrawInhabitants(GLint nShadow)
         glPopMatrix();
         
         // 圍觀群眾
-        // glPushMatrix();
-        //     glTranslatef(0.5f, -0.24f, 0.5f);
-        //     glBindTexture(GL_TEXTURE_2D, textureObjects[TORUS_TEXTURE]);
-        //     drawRobot(nShadow);
-        // glPopMatrix();
+        glPushMatrix();
+            glTranslatef(0.5f, -0.24f, -0.5f);
+            glBindTexture(GL_TEXTURE_2D, textureObjects[ROBOT_TEXTURE]);
+            glRotated(-45, 0, 1, 0);
+            drawRobot(nShadow);
+        glPopMatrix();
+        glPushMatrix();
+            glTranslatef(-0.5f, -0.24f, -0.5f);
+            glBindTexture(GL_TEXTURE_2D, textureObjects[ROBOT_TEXTURE]);
+            glRotated(45, 0, 1, 0);
+            drawRobot(nShadow);
+        glPopMatrix();
+
+        glPushMatrix();
+            glBindTexture(GL_TEXTURE_2D, textureObjects[TORUS_TEXTURE]);
+            glTranslatef(-2.0f, 0.0f, -1.0f);
+            // drawTorso(1.0f, 2.0f, 1.0f, nShadow);
+            // ObjLoader buildingObj = ObjLoader("D:\\code\\graph\\final\\Build.obj"); 
+            // buildingObj.init();
+            // // glScalef(5.0f, 5.0f, 5.0f);
+            // buildingObj.rotate();
+            // buildingObj.translate();
+            // buildingObj.draw(nShadow);
+        glPopMatrix();
     glPopMatrix();
 }
 
@@ -3757,9 +3778,11 @@ void drawRobot(int nShadow)
     glPushMatrix();
     glTranslated(0, 0.16f, 0);
     // drawHead();
+    glRotated(10, 1, 0, 0);
     if (nShadow == 0)
         glColor3ub(150, 150, 220);
-    drawCube(0.04f, 0.04f, 0.04f);
+    // drawCube(0.04f, 0.04f, 0.04f);
+    drawTorso(0.04f, 0.04f, 0.04f, nShadow);
     glPopMatrix();
 
     // left arm
@@ -3769,7 +3792,8 @@ void drawRobot(int nShadow)
     glTranslated(-0.12, 0.07, 0);
     glRotated(leftArmAngle, 1, 0, 0);
     glTranslated(0, -0.05, 0);
-    drawCube(0.02f, 0.05f, 0.02f);
+    // drawCube(0.02f, 0.05f, 0.02f);
+    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPushMatrix();
     // drawJoint();
     if (nShadow == 0)
@@ -3778,7 +3802,8 @@ void drawRobot(int nShadow)
     glRotated(10.0, 0, 0, 1);
     glRotated(leftArmAngle * 0.5, 1, 0, 0);
     glTranslated(0, -0.016, 0);
-    drawCube(0.016f, 0.016f, 0.016f);
+    // drawCube(0.016f, 0.016f, 0.016f);
+    drawTorso(0.016f, 0.016f, 0.016f, nShadow);
     // drawLowerArm();
     if (nShadow == 0)
         glColor3ub(150, 150, 220);
@@ -3786,7 +3811,8 @@ void drawRobot(int nShadow)
     glRotated(5, 0, 0, 1);
     glRotated(leftArmAngle * 0.7, 1, 0, 0);
     glTranslated(0, -0.05, 0);
-    drawCube(0.02f, 0.05f, 0.02f);
+    // drawCube(0.02f, 0.05f, 0.02f);
+    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPopMatrix();
     glPopMatrix();
 
@@ -3797,7 +3823,8 @@ void drawRobot(int nShadow)
     glTranslated(0.12, 0.07, 0);
     glRotated(rightArmAngle, 1, 0, 0);
     glTranslated(0, -0.05, 0);
-    drawCube(0.02f, 0.05f, 0.02f);
+    // drawCube(0.02f, 0.05f, 0.02f);
+    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPushMatrix();
     // drawJoint();
     if (nShadow == 0)
@@ -3806,7 +3833,8 @@ void drawRobot(int nShadow)
     glRotated(-0.1, 0, 0, 1);
     glRotated(rightArmAngle * 0.5, 1, 0, 0);
     glTranslated(0, -0.016, 0);
-    drawCube(0.016f, 0.016f, 0.016f);
+    // drawCube(0.016f, 0.016f, 0.016f);
+    drawTorso(0.016f, 0.016f, 0.016f, nShadow);
     // drawLowerArm();
     if (nShadow == 0)
         glColor3ub(150, 150, 220);
@@ -3814,7 +3842,8 @@ void drawRobot(int nShadow)
     glRotated(-5, 0, 0, 1);
     glRotated(rightArmAngle * 0.7, 1, 0, 0);
     glTranslated(0, -0.05, 0);
-    drawCube(0.02f, 0.05f, 0.02f);
+    // drawCube(0.02f, 0.05f, 0.02f);
+    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPopMatrix();
     glPopMatrix();
 
@@ -3824,7 +3853,8 @@ void drawRobot(int nShadow)
     glRotated(-5, 0, 0, 1);
     glRotated(leftLegAngle, 1, 0, 0);
     glTranslated(-0.02, -0.16, 0);
-    drawCube(0.02f, 0.05f, 0.02f);
+    // drawCube(0.02f, 0.05f, 0.02f);
+    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPushMatrix();
     // drawJoint();
     if (nShadow == 0)
@@ -3832,14 +3862,16 @@ void drawRobot(int nShadow)
     glTranslated(0, -0.06, 0);
     glRotated(5.0, 0, 0, 1);
     glRotated(leftLegAngle * 0.5, 1, 0, 0);
-    drawCube(0.016f, 0.016f, 0.016f);
+    // drawCube(0.016f, 0.016f, 0.016f);
+    drawTorso(0.016f, 0.016f, 0.016f, nShadow);
     // drawLowerLeg();
     if (nShadow == 0)
         glColor3ub(150, 150, 220);
     glTranslated(-0.01, -0.01, 0);
     glRotated(leftLegAngle * 0.7, 1, 0, 0);
     glTranslated(0.01, -0.05, 0);
-    drawCube(0.02f, 0.05f, 0.02f);
+    // drawCube(0.02f, 0.05f, 0.02f);
+    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPopMatrix();
     glPopMatrix();
 
@@ -3849,7 +3881,8 @@ void drawRobot(int nShadow)
     glRotated(5, 0, 0, 1);
     glRotated(rightLegAngle, 1, 0, 0);
     glTranslated(0.02, -0.16, 0);
-    drawCube(0.02f, 0.05f, 0.02f);
+    // drawCube(0.02f, 0.05f, 0.02f);
+    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPushMatrix();
     // drawJoint();
     if (nShadow == 0)
@@ -3857,14 +3890,16 @@ void drawRobot(int nShadow)
     glTranslated(0, -0.06, 0);
     glRotated(-5.0, 0, 0, 1);
     glRotated(rightLegAngle * 0.5, 1, 0, 0);
-    drawCube(0.016f, 0.016f, 0.016f);
+    // drawCube(0.016f, 0.016f, 0.016f);
+    drawTorso(0.016f, 0.016f, 0.016f, nShadow);
     // drawLowerLeg();
     if (nShadow == 0)
         glColor3ub(150, 150, 220);
     glTranslated(0.01, -0.01, 0);
     glRotated(rightLegAngle * 0.7, 1, 0, 0);
     glTranslated(-0.01, -0.05, 0);
-    drawCube(0.02f, 0.05f, 0.02f);
+    // drawCube(0.02f, 0.05f, 0.02f);
+    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPopMatrix();
     glPopMatrix();
 }
