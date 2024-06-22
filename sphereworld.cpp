@@ -581,6 +581,8 @@ void gltDrawTorus(GLfloat majorRadius, GLfloat minorRadius, GLint numMajor, GLin
 // Just draw a simple sphere with normals and texture coordinates
 void gltDrawSphere(GLfloat fRadius, GLint iSlices, GLint iStacks, int shadowMode);
 
+void drawPlanet(GLfloat fRadius, GLint iSlices, GLint iStacks, int shadowMode);
+
 // Draw a 3D unit Axis set
 void gltDrawUnitAxes(void);
 
@@ -2946,6 +2948,63 @@ void gltDrawSphere(GLfloat fRadius, GLint iSlices, GLint iStacks, int shadowMode
     }
 }
 
+void drawPlanet(GLfloat fRadius, GLint iSlices, GLint iStacks, int shadowMode)
+{
+    GLfloat drho = (GLfloat)(3.141592653589) / (GLfloat)iStacks;
+    GLfloat dtheta = 2.0f * (GLfloat)(3.141592653589) / (GLfloat)iSlices;
+    GLfloat ds = 1.0f / (GLfloat)iSlices;
+    GLfloat dt = 1.0f / (GLfloat)iStacks;
+    GLfloat t = 1.0f;
+    GLfloat s = 0.0f;
+    GLint i, j; // Looping variables
+
+    for (i = 0; i < iStacks; i++)
+    {
+        GLfloat rho = (GLfloat)i * drho;
+        GLfloat srho = (GLfloat)(sin(rho));
+        GLfloat crho = (GLfloat)(cos(rho));
+        GLfloat srhodrho = (GLfloat)(sin(rho + drho));
+        GLfloat crhodrho = (GLfloat)(cos(rho + drho));
+
+        // Many sources of OpenGL sphere drawing code uses a triangle fan
+        // for the caps of the sphere. This however introduces texturing
+        // artifacts at the poles on some OpenGL implementations
+        if(shadowMode == 1){
+            glColor4d(0.0, 0.0, 0.0, 0.0);
+        }
+        else{
+            glColor3d(1.0, 1.0, 1.0);
+        }
+        glBegin(GL_TRIANGLE_STRIP);
+        s = 0.0f;
+        for (j = 0; j <= iSlices; j++)
+        {
+            GLfloat theta = (j == iSlices) ? 0.0f : j * dtheta;
+            GLfloat stheta = (GLfloat)(-sin(theta));
+            GLfloat ctheta = (GLfloat)(cos(theta));
+
+            GLfloat x = stheta * srho;
+            GLfloat y = ctheta * srho;
+            GLfloat z = crho;
+
+            glTexCoord2f(s, t);
+            glNormal3f(x, y, z);
+            glVertex3f(x * fRadius, y * fRadius, z * fRadius);
+
+            x = stheta * srhodrho;
+            y = ctheta * srhodrho;
+            z = crhodrho;
+            glTexCoord2f(s, t - dt);
+            s += ds;
+            glNormal3f(x, y, z);
+            glVertex3f(x * fRadius, y * fRadius, z * fRadius);
+        }
+        glEnd();
+
+        t -= dt;
+    }
+}
+
 // Define targa header. This is only used locally.
 #pragma pack(1)
 typedef struct
@@ -3167,18 +3226,22 @@ GLfloat fBrightLight[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
 M3DMatrix44f mShadowMatrix;
 
+// index
 #define GROUND_TEXTURE 0    // 白土
 #define TORUS_TEXTURE 1     // 白泥
 #define SPHERE_TEXTURE 2    // 黑土
 #define ROBOT_TEXTURE 3     // 金屬
 #define BUILDING_TEXTURE 3  // 建築
-#define NUM_TEXTURES 4
+#define PLANET_TEXTURE 4    // 行星
+
+#define NUM_TEXTURES 5
 GLuint textureObjects[NUM_TEXTURES];
 
 const char *szTextureFiles[] = {"D:\\code\\graph\\final\\snow_02_rough_1k.tga", \
                                 "D:\\code\\graph\\final\\polystyrene_disp_1k.tga", \
                                 "D:\\code\\graph\\final\\brown_mud_02_diff_1k.tga", \
-                                "D:\\code\\graph\\final\\metallic-textured-background.tga"};
+                                "D:\\code\\graph\\final\\metallic-textured-background.tga", \
+                                "D:\\code\\graph\\final\\cracked_concrete_wall_diff_1k.tga"};
 
 GLfloat angleLeftArm1 = 0;
 GLfloat angleLeftArm2 = 10;
@@ -3203,7 +3266,7 @@ void SetupRC()
 
     // Grayish background
     // glClearColor(fLowLight[0], fLowLight[1], fLowLight[2], fLowLight[3]);
-    glClearColor(0.95f, 0.95f, 0.95f, 1.0f);
+    glClearColor(0.05f, 0.05f, 0.15f, 1.0f);
 
     // Clear stencil buffer with zero, increment by one whenever anybody
     // draws into it. When stencil function is enabled, only write where
@@ -3638,13 +3701,21 @@ void DrawInhabitants(GLint nShadow)
             drawRobotWithView(nShadow);
         glPopMatrix();
 
-        // TODO: 亂跑機器人
+        // TODO: 行星
+        glPushMatrix();
+            // 旋轉
+            glBindTexture(GL_TEXTURE_2D, textureObjects[PLANET_TEXTURE]);
+            glTranslatef(0.0f, 0.0f, -60.0f);
+            glRotatef(-yRot * 0.2f, 0.0f, 0.0f, 1.0f);
+            drawPlanet(22.0f, 21, 11, nShadow);
+            // drawSquare();
+        glPopMatrix();
 
 
         // 建築
         glBindTexture(GL_TEXTURE_2D, textureObjects[BUILDING_TEXTURE]);
         glPushMatrix();
-            glTranslatef(-2.0f, 0.0f, -20.0f); 
+            glTranslatef(-2.0f, 0.0f, -18.0f); 
             glPushMatrix();
                 glTranslatef(0.0f, 2.3f, 0.0f);
                 drawTorso(0.8f, 3.0f, 0.8f, nShadow);
