@@ -612,7 +612,7 @@ bool timerStatus = true;
 void TimerFunction(int);
 
 // load obj file
-ObjLoader* grassObj = new ObjLoader("D:\\code\\graph\\Lab13\\final_sampleCode\\testOBJ.obj");
+ObjLoader* grassObj = new ObjLoader("D:\\code\\graph\\Lab13\\final_sampleCode\\testOBJ.obj", "C:\\Users\\selab\\Downloads\\ImageToStl.com_nettle_plant_1k\\nettle_plant_dry_diff_1k_2.png");
 
 ///////////////////////////////////////////////////////////////////////////////
 // Win32 Only
@@ -3170,10 +3170,14 @@ M3DMatrix44f mShadowMatrix;
 #define TORUS_TEXTURE 1     // 白泥
 #define SPHERE_TEXTURE 2    // 黑土
 #define ROBOT_TEXTURE 3     // 金屬
+#define BUILDING_TEXTURE 3  // 建築
 #define NUM_TEXTURES 4
 GLuint textureObjects[NUM_TEXTURES];
 
-const char *szTextureFiles[] = {"D:\\code\\graph\\final\\snow_02_rough_1k.tga", "D:\\code\\graph\\final\\polystyrene_disp_1k.tga", "D:\\code\\graph\\final\\brown_mud_02_diff_1k.tga", "D:\\code\\graph\\final\\metallic-textured-background.tga"};
+const char *szTextureFiles[] = {"D:\\code\\graph\\final\\snow_02_rough_1k.tga", \
+                                "D:\\code\\graph\\final\\polystyrene_disp_1k.tga", \
+                                "D:\\code\\graph\\final\\brown_mud_02_diff_1k.tga", \
+                                "D:\\code\\graph\\final\\metallic-textured-background.tga"};
 
 GLfloat angleLeftArm1 = 0;
 GLfloat angleLeftArm2 = 10;
@@ -3633,16 +3637,37 @@ void DrawInhabitants(GLint nShadow)
             drawRobot(nShadow);
         glPopMatrix();
 
+        // 亂跑機器人
+        
+
+        // 建築
+        glBindTexture(GL_TEXTURE_2D, textureObjects[BUILDING_TEXTURE]);
         glPushMatrix();
-            glBindTexture(GL_TEXTURE_2D, textureObjects[TORUS_TEXTURE]);
-            glTranslatef(-2.0f, 0.0f, -1.0f);
-            // drawTorso(1.0f, 2.0f, 1.0f, nShadow);
-            // ObjLoader buildingObj = ObjLoader("D:\\code\\graph\\final\\Build.obj"); 
-            // buildingObj.init();
-            // // glScalef(5.0f, 5.0f, 5.0f);
-            // buildingObj.rotate();
-            // buildingObj.translate();
-            // buildingObj.draw(nShadow);
+            glTranslatef(-2.0f, 0.0f, -20.0f); 
+            glPushMatrix();
+                glTranslatef(0.0f, 2.3f, 0.0f);
+                drawTorso(0.8f, 3.0f, 0.8f, nShadow);
+            glPopMatrix();
+            glPushMatrix();
+                glTranslatef(2.0f, 3.0f, -1.0f);
+                drawTorso(0.8f, 5.0f, 0.8f, nShadow);
+            glPopMatrix();
+            glPushMatrix();
+                glTranslatef(5.0f, 3.0f, 1.0f);
+                drawTorso(0.8f, 4.0f, 0.8f, nShadow);
+            glPopMatrix();
+            glPushMatrix();
+                glTranslatef(3.5f, 2.0f, 4.0f);
+                drawTorso(0.8f, 2.5f, 0.8f, nShadow);
+            glPopMatrix();
+            glPushMatrix();
+                glTranslatef(1.5f, 1.5f, 4.0f);
+                drawTorso(0.8f, 2.0f, 0.8f, nShadow);
+            glPopMatrix();
+            glPushMatrix();
+                glTranslatef(-0.7f, 2.6f, 2.0f);
+                drawTorso(0.6f, 3.2f, 0.6f, nShadow);
+            glPopMatrix();
         glPopMatrix();
     glPopMatrix();
 }

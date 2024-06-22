@@ -22,7 +22,8 @@ public:
     int vi=0, vti=0, vni=0;
     GLuint textures[1];
     cv::Mat grassImg;
-    ObjLoader(string filename) {
+    std::string texturePath;
+    ObjLoader(string filename, string texturePath) {
         ifstream file(filename);
         if (!file.is_open()) {
             printf("Error opening file!\n");
@@ -122,9 +123,9 @@ public:
         file.close();
         srand(time(NULL));
 
-        grassImg = cv::imread("C:\\Users\\selab\\Downloads\\ImageToStl.com_nettle_plant_1k\\nettle_plant_dry_diff_1k_2.png"); // �Q��openCVŪ���Ϥ��ɮ�
+        grassImg = cv::imread(texturePath); 
         if (grassImg.empty()) {
-            std::cout << "grassImg empty\n";
+           std::cout << "grassImg empty\n";
         }
         else {
             cv::flip(grassImg, grassImg, 0);
@@ -138,6 +139,10 @@ public:
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, grassImg.cols, grassImg.rows, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, grassImg.ptr());
         }
+    }
+
+    void setTexture(std::string filename) {
+        texturePath  = filename;
     }
 
     void translatedInit() {
