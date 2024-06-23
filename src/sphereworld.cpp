@@ -608,7 +608,6 @@ float rightLegAngle = 0.0f;
 const float swingAmplitude = 30.0f;
 const float swingSpeed = 0.05f;
 void drawCube(GLfloat, GLfloat, GLfloat);
-void drawRobot(int);
 void drawRobotWithView(int);
 void drawTorso(GLfloat, GLfloat, GLfloat, int);
 bool timerStatus = true;
@@ -3302,13 +3301,6 @@ void SetupRC()
     glMaterialfv(GL_FRONT, GL_SPECULAR, fBrightLight);
     glMateriali(GL_FRONT, GL_SHININESS, 128);
 
-    // Randomly place the sphere inhabitants
-    // for (iSphere = 0; iSphere < NUM_SPHERES; iSphere++)
-    // {
-    //     // Pick a random location between -20 and 20 at .1 increments
-    //     spheres[iSphere].SetOrigin(((float)((rand() % 400) - 200) * 0.1f), 0.0, (float)((rand() % 400) - 200) * 0.1f);
-    // }
-
     // Set up texture maps
     glEnable(GL_TEXTURE_2D);
     glGenTextures(NUM_TEXTURES, textureObjects);
@@ -3549,7 +3541,6 @@ void drawTorso(GLfloat x, GLfloat y, GLfloat z, int shadowMode)
     else{
         glColor3d(1.0, 1.0, 1.0);
     }
-    // glBindTexture(GL_TEXTURE_2D, textureObjects[TORUS_TEXTURE]);
     glBegin(GL_QUADS);
     // Front Face
     glNormal3f(0.0f, 0.0f, 1.0f);
@@ -3639,11 +3630,10 @@ void DrawInhabitants(GLint nShadow)
         glTranslatef(0.0f, 0.1f, -2.5f);
         glPushMatrix();
             glPushMatrix();
-                // 旋轉
+                // 旋轉小太陽
                 glRotatef(-yRot * 2.0f, 0.0f, 1.0f, 0.0f);
                 glTranslatef(0.1f, 0.0f, -0.1f);
                 gltDrawSphere(0.02f, 21, 11, nShadow);
-                // drawSquare();
             glPopMatrix();
 
             if (nShadow == 0)
@@ -3652,12 +3642,8 @@ void DrawInhabitants(GLint nShadow)
                 glMaterialfv(GL_FRONT, GL_SPECULAR, fNoLight);
             }
 
-            // 旋轉
+            // 自轉的草
             glRotatef(yRot, 0.0f, 1.0f, 0.0f);
-            // glBindTexture(GL_TEXTURE_2D, textureObjects[TORUS_TEXTURE]);
-            // gltDrawTorus(0.35, 0.15, 61, 37);
-            // drawCube(0.1f, 0.1f, 0.1f);
-            // drawRobot(0);
             glPushMatrix();
                 glDisable(GL_CULL_FACE);
                 grassObj->init();
@@ -3665,7 +3651,6 @@ void DrawInhabitants(GLint nShadow)
                 grassObj->rotate();
                 grassObj->translate();
                 grassObj->draw(nShadow);
-                // glMaterialfv(GL_FRONT, GL_SPECULAR, fNoLight);
                 glEnable(GL_CULL_FACE);
             glPopMatrix();
             // 土壤
@@ -3673,8 +3658,6 @@ void DrawInhabitants(GLint nShadow)
                 glBindTexture(GL_TEXTURE_2D, textureObjects[SPHERE_TEXTURE]);
                 glTranslated(0.0f, -0.17f, 0.0f);
                 drawTorso(0.04f, 0.02f, 0.04f, nShadow);
-            // 盆
-                // glBindTexture(GL_TEXTURE_2D, textureObjects[ROBOT_TEXTURE]);
                 glTranslated(0.0f, -0.005f, 0.0f);
                 drawTorso(0.055f, 0.01f, 0.055f, nShadow);
             glPopMatrix();
@@ -3701,14 +3684,13 @@ void DrawInhabitants(GLint nShadow)
             drawRobotWithView(nShadow);
         glPopMatrix();
 
-        // TODO: 行星
+        // 行星
         glPushMatrix();
             // 旋轉
             glBindTexture(GL_TEXTURE_2D, textureObjects[PLANET_TEXTURE]);
             glTranslatef(0.0f, 0.0f, -60.0f);
             glRotatef(-yRot * 0.2f, 0.0f, 0.0f, 1.0f);
             drawPlanet(22.0f, 21, 11, nShadow);
-            // drawSquare();
         glPopMatrix();
 
 
@@ -3779,7 +3761,6 @@ void RenderScene(void)
 
         // Draw inhabitants normally
         DrawInhabitants(0);
-        // DrawRobot(1);
 
     glPopMatrix();
 
@@ -3822,11 +3803,6 @@ void TimerFunction(int value)
         if (angle > 360) {
             angle -= 360;
         }
-
-        // leftArmAngle = swingAmplitude * sin(swingSpeed * angle);
-        // rightArmAngle = swingAmplitude * sin(swingSpeed * angle + 3.14);
-        // leftLegAngle = swingAmplitude * sin(swingSpeed * angle + 3.14);
-        // rightLegAngle = swingAmplitude * sin(swingSpeed * angle);
         glutPostRedisplay();
         glutTimerFunc(10, TimerFunction, 1);
     }
@@ -3856,133 +3832,6 @@ void ChangeSize(int w, int h)
     glLoadIdentity();
 }
 
-void drawRobot(int nShadow)
-{
-    M3DVector3f vNormal;
-    if (nShadow != 0)
-        glColor4ub(0, 0, 0, 0.6);
-
-    glTranslated(0, 0.06, 0);
-    if (nShadow == 0)
-        glColor3ub(220, 150, 220);
-    drawTorso(0.08f, 0.12f, 0.08f, nShadow);
-
-    glPushMatrix();
-    glTranslated(0, 0.16f, 0);
-    // head
-    // glRotated(10, 1, 0, 0);
-    if (nShadow == 0)
-        glColor3ub(150, 150, 220);
-    drawTorso(0.04f, 0.04f, 0.04f, nShadow);
-    glPopMatrix();
-
-    // left arm
-    glPushMatrix();
-    // upperArm
-    glRotated(-20, 0, 0, 1);
-    glTranslated(-0.12, 0.07, 0);
-    glRotated(leftArmAngle, 1, 0, 0);
-    glTranslated(0, -0.05, 0);
-    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
-    glPushMatrix();
-    // drawJoint();
-    if (nShadow == 0)
-        glColor3ub(200, 200, 255);
-    glTranslated(0, -0.044, 0);
-    glRotated(10.0, 0, 0, 1);
-    glRotated(leftArmAngle * 0.5, 1, 0, 0);
-    glTranslated(0, -0.016, 0);
-    drawTorso(0.016f, 0.016f, 0.016f, nShadow);
-    // drawLowerArm();
-    if (nShadow == 0)
-        glColor3ub(150, 150, 220);
-    glTranslated(0, -0.01, 0);
-    glRotated(5, 0, 0, 1);
-    glRotated(leftArmAngle * 0.7, 1, 0, 0);
-    glTranslated(0, -0.05, 0);
-    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
-    glPopMatrix();
-    glPopMatrix();
-
-    // right arm
-    glPushMatrix();
-    //     drawUpperArm();
-    glRotated(20, 0, 0, 1);
-    glTranslated(0.12, 0.07, 0);
-    glRotated(rightArmAngle, 1, 0, 0);
-    glTranslated(0, -0.05, 0);
-    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
-    glPushMatrix();
-    // drawJoint();
-    if (nShadow == 0)
-        glColor3ub(200, 200, 255);
-    glTranslated(0, -0.044, 0);
-    glRotated(-0.1, 0, 0, 1);
-    glRotated(rightArmAngle * 0.5, 1, 0, 0);
-    glTranslated(0, -0.016, 0);
-    drawTorso(0.016f, 0.016f, 0.016f, nShadow);
-    // drawLowerArm();
-    if (nShadow == 0)
-        glColor3ub(150, 150, 220);
-    glTranslated(0, -0.01, 0);
-    glRotated(-5, 0, 0, 1);
-    glRotated(rightArmAngle * 0.7, 1, 0, 0);
-    glTranslated(0, -0.05, 0);
-    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
-    glPopMatrix();
-    glPopMatrix();
-
-    // left leg
-    glPushMatrix();
-    //     drawUpperLeg();
-    glRotated(-5, 0, 0, 1);
-    glRotated(leftLegAngle, 1, 0, 0);
-    glTranslated(-0.02, -0.16, 0);
-    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
-    glPushMatrix();
-    // drawJoint();
-    if (nShadow == 0)
-        glColor3ub(200, 200, 255);
-    glTranslated(0, -0.06, 0);
-    glRotated(5.0, 0, 0, 1);
-    glRotated(leftLegAngle * 0.5, 1, 0, 0);
-    drawTorso(0.016f, 0.016f, 0.016f, nShadow);
-    // drawLowerLeg();
-    if (nShadow == 0)
-        glColor3ub(150, 150, 220);
-    glTranslated(-0.01, -0.01, 0);
-    glRotated(leftLegAngle * 0.7, 1, 0, 0);
-    glTranslated(0.01, -0.05, 0);
-    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
-    glPopMatrix();
-    glPopMatrix();
-
-    // right leg
-    glPushMatrix();
-    //     drawUpperLeg();
-    glRotated(5, 0, 0, 1);
-    glRotated(rightLegAngle, 1, 0, 0);
-    glTranslated(0.02, -0.16, 0);
-    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
-    glPushMatrix();
-    // drawJoint();
-    if (nShadow == 0)
-        glColor3ub(200, 200, 255);
-    glTranslated(0, -0.06, 0);
-    glRotated(-5.0, 0, 0, 1);
-    glRotated(rightLegAngle * 0.5, 1, 0, 0);
-    drawTorso(0.016f, 0.016f, 0.016f, nShadow);
-    // drawLowerLeg();
-    if (nShadow == 0)
-        glColor3ub(150, 150, 220);
-    glTranslated(0.01, -0.01, 0);
-    glRotated(rightLegAngle * 0.7, 1, 0, 0);
-    glTranslated(-0.01, -0.05, 0);
-    drawTorso(0.02f, 0.05f, 0.02f, nShadow);
-    glPopMatrix();
-    glPopMatrix();
-}
-
 void drawRobotWithView(int nShadow)
 {
     M3DVector3f vNormal;
@@ -4008,7 +3857,6 @@ void drawRobotWithView(int nShadow)
     // upperArm
     glRotated(-20, 0, 0, 1);
     glTranslated(-0.12, 0.07, 0);
-    // glRotated(leftArmAngle, 1, 0, 0);
     glTranslated(0, -0.05, 0);
     drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPushMatrix();
@@ -4017,7 +3865,6 @@ void drawRobotWithView(int nShadow)
         glColor3ub(200, 200, 255);
     glTranslated(0, -0.044, 0);
     glRotated(10.0, 0, 0, 1);
-    // glRotated(leftArmAngle * 0.5, 1, 0, 0);
     glTranslated(0, -0.016, 0);
     drawTorso(0.016f, 0.016f, 0.016f, nShadow);
     // drawLowerArm();
@@ -4025,7 +3872,6 @@ void drawRobotWithView(int nShadow)
         glColor3ub(150, 150, 220);
     glTranslated(0, -0.01, 0);
     glRotated(5, 0, 0, 1);
-    // glRotated(leftArmAngle * 0.7, 1, 0, 0);
     glTranslated(0, -0.05, 0);
     drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPopMatrix();
@@ -4033,10 +3879,9 @@ void drawRobotWithView(int nShadow)
 
     // right arm
     glPushMatrix();
-    //     drawUpperArm();
+    // drawUpperArm();
     glRotated(20, 0, 0, 1);
     glTranslated(0.12, 0.07, 0);
-    // glRotated(rightArmAngle, 1, 0, 0);
     glTranslated(0, -0.05, 0);
     drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPushMatrix();
@@ -4045,7 +3890,6 @@ void drawRobotWithView(int nShadow)
         glColor3ub(200, 200, 255);
     glTranslated(0, -0.044, 0);
     glRotated(-0.1, 0, 0, 1);
-    // glRotated(rightArmAngle * 0.5, 1, 0, 0);
     glTranslated(0, -0.016, 0);
     drawTorso(0.016f, 0.016f, 0.016f, nShadow);
     // drawLowerArm();
@@ -4053,7 +3897,6 @@ void drawRobotWithView(int nShadow)
         glColor3ub(150, 150, 220);
     glTranslated(0, -0.01, 0);
     glRotated(-5, 0, 0, 1);
-    // glRotated(rightArmAngle * 0.7, 1, 0, 0);
     glTranslated(0, -0.05, 0);
     drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPopMatrix();
@@ -4063,7 +3906,6 @@ void drawRobotWithView(int nShadow)
     glPushMatrix();
     //     drawUpperLeg();
     glRotated(-5, 0, 0, 1);
-    // glRotated(leftLegAngle, 1, 0, 0);
     glTranslated(-0.02, -0.16, 0);
     drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPushMatrix();
@@ -4072,13 +3914,11 @@ void drawRobotWithView(int nShadow)
         glColor3ub(200, 200, 255);
     glTranslated(0, -0.06, 0);
     glRotated(5.0, 0, 0, 1);
-    // glRotated(leftLegAngle * 0.5, 1, 0, 0);
     drawTorso(0.016f, 0.016f, 0.016f, nShadow);
     // drawLowerLeg();
     if (nShadow == 0)
         glColor3ub(150, 150, 220);
     glTranslated(-0.01, -0.01, 0);
-    // glRotated(leftLegAngle * 0.7, 1, 0, 0);
     glTranslated(0.01, -0.05, 0);
     drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPopMatrix();
@@ -4088,7 +3928,6 @@ void drawRobotWithView(int nShadow)
     glPushMatrix();
     //     drawUpperLeg();
     glRotated(5, 0, 0, 1);
-    // glRotated(rightLegAngle, 1, 0, 0);
     glTranslated(0.02, -0.16, 0);
     drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPushMatrix();
@@ -4097,13 +3936,11 @@ void drawRobotWithView(int nShadow)
         glColor3ub(200, 200, 255);
     glTranslated(0, -0.06, 0);
     glRotated(-5.0, 0, 0, 1);
-    // glRotated(rightLegAngle * 0.5, 1, 0, 0);
     drawTorso(0.016f, 0.016f, 0.016f, nShadow);
     // drawLowerLeg();
     if (nShadow == 0)
         glColor3ub(150, 150, 220);
     glTranslated(0.01, -0.01, 0);
-    // glRotated(rightLegAngle * 0.7, 1, 0, 0);
     glTranslated(-0.01, -0.05, 0);
     drawTorso(0.02f, 0.05f, 0.02f, nShadow);
     glPopMatrix();

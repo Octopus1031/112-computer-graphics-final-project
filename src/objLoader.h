@@ -32,8 +32,6 @@ public:
         while (getline(file, line))
         {
             if(line.substr(0, 2) == "vt"){
-                // vti++;
-                // cout << "vt" << vti << endl;
                 float x, y;
                 stringstream ss(line.substr(2));
                 ss >> x; ss >> y;
@@ -43,8 +41,6 @@ public:
                 vt.push_back(Point);
             }
             else if(line.substr(0, 2) == "vn"){
-                // vni++;
-                // cout << "vn" << vni << endl;
                 float x, y, z;
                 stringstream ss(line.substr(2));
                 ss >> x; ss >> y; ss >> z;
@@ -55,10 +51,8 @@ public:
                 vn.push_back(Point);
             }
             else if (line.substr(0, 2) == "v ")
-            // if(line.compare(0, 2, "v ") == 0)
             {
                 // vi++;
-                // cout << "v" << vi << endl;
                 vector<GLfloat> Point;
                 GLfloat x, y, z;
                 istringstream s(line.substr(2));
@@ -91,13 +85,6 @@ public:
                 vector<GLint> vIndexSets;
                 vector<GLint> vtIndexSets;
                 vector<GLint> vnIndexSets;
-                // GLint u, v, w;
-                // istringstream vtns(line.substr(2));
-                // vtns >> u; vtns >> v; vtns >> w;
-                // vIndexSets.push_back(u - 1);
-                // vIndexSets.push_back(v - 1);
-                // vIndexSets.push_back(w - 1);
-                // f.push_back(vIndexSets);
 
                 std::istringstream iss(line);
                 std::string part;
@@ -112,7 +99,6 @@ public:
                     vIndexSets.push_back(std::stoi(vNumber) - 1);
                     vtIndexSets.push_back(std::stoi(vtNumber) - 1);
                     vnIndexSets.push_back(std::stoi(vnNumber) - 1);
-                    // cout << "v: " << vNumber << "vt:" << vtNumber << "vn:" << vnNumber << endl;
                 }
                 f.push_back(vIndexSets);
                 fvt.push_back(vtIndexSets);
@@ -242,7 +228,6 @@ public:
         cameraLookAt[2] = 0.0;
     }
     void draw(int shadowMode) {
-        // drawCube();
         switch (renderMode) {
             case 0:
                 drawModePoint();
@@ -282,12 +267,12 @@ public:
     }
 
 private:
-    vector<vector<GLfloat>> v;  //���I(x,y,z)
-    vector<vector<GLint>> f;    //�s�T���Iindex
-    vector<vector<GLfloat>> vt; //��texture�I(a,b)
-    vector<vector<GLint>> fvt;  //�s�T���Itrexture index
-    vector<vector<GLfloat>> vn; //��normal���I(x,y,z)
-    vector<vector<GLint>> fvn;  //�s�T���Inormal index
+    vector<vector<GLfloat>> v;
+    vector<vector<GLint>> f;
+    vector<vector<GLfloat>> vt;
+    vector<vector<GLint>> fvt;
+    vector<vector<GLfloat>> vn;
+    vector<vector<GLint>> fvn; 
     float maxX=0, maxY=0, maxZ=0;
     float minX=0, minY=0, minZ=0;
     int renderMode = 2;     //0: point, 1: line, 2: face
@@ -380,7 +365,7 @@ private:
                 cout << "ERRER::THE SIZE OF f IS NOT 3!" << endl;
             }
             else {
-                GLint firstVertexIndex = (f[i])[0];//���Iindex
+                GLint firstVertexIndex = (f[i])[0];
                 GLint secondVertexIndex = (f[i])[1];
                 GLint thirdVertexIndex = (f[i])[2];
 
@@ -396,7 +381,6 @@ private:
                 c.y = (v[thirdVertexIndex])[1];
                 c.z = (v[thirdVertexIndex])[2];
 
-                //�e�T��
                 glVertex3f(a.x, a.y, a.z); 
                 glVertex3f(b.x, b.y, b.z);
 
@@ -416,10 +400,8 @@ private:
             glColor3f(defaultColorFace[0], defaultColorFace[1], defaultColorFace[2]);
         }
         else { // is shadow
-            // glColor3f(RandomColor[0], RandomColor[1], RandomColor[2]);
             glColor4d(0.0, 0.0, 0.0, 0.6);
         }
-        // glBindTexture(GL_TEXTURE_2D, textures[0]);
         for (int i = 0; i < f.size(); i++) {
             vertex a, b, c, normala, normalb, normalc, normal;
 
@@ -467,7 +449,6 @@ private:
                 GLint secondTextureIndex = (fvt[i])[1];
                 GLint thirdTextureIndex = (fvt[i])[2];
 
-                // TODO: normal
                 glNormal3f(normal.x, normal.y, normal.z);
                 glBindTexture(GL_TEXTURE_2D, textures[0]);
                 glTexCoord2f( (vt[firstTextureIndex])[0], (vt[firstTextureIndex])[1]);
